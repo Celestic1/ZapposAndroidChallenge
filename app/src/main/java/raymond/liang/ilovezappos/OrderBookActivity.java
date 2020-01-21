@@ -31,12 +31,10 @@ public class OrderBookActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<String> bidList;
     private List<String> askList;
-//    private List<String> bidPrice;
-//    private List<String> bidAmt;
-//    private List<String> askPrice;
-//    private List<String> askAmt;
-    private RecyclerView recyclerView;
-    private OrderBookAdapter adapter;
+    private RecyclerView bidsRecyclerView;
+    private RecyclerView asksRecyclerView;
+    private OrderBookAdapter bidsAdapter;
+    private OrderBookAdapter asksAdapter;
     private OrderBookViewModel orderBookViewModel;
 
     @Override
@@ -48,19 +46,17 @@ public class OrderBookActivity extends AppCompatActivity {
         //orderBookViewModel = new ViewModelProvider(this.getViewModelStore(), ViewModelProvider.AndroidViewModelFactory).get(OrderBookViewModel.class);
         dateTextView = findViewById(R.id.dateTextView);
         swipeRefreshLayout = findViewById(R.id.swipe_container);
-        recyclerView = findViewById(R.id.recyclerview);
+        bidsRecyclerView = findViewById(R.id.bidsRecyclerView);
+        asksRecyclerView = findViewById(R.id.asksRecyclerView);
         bidList = new ArrayList<>();
         askList =  new ArrayList<>();
-//        bidPrice = new ArrayList<>();
-//        bidAmt = new ArrayList<>();
-//        askPrice = new ArrayList<>();
-//        askAmt = new ArrayList<>();
 
         swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_orange_dark);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                recyclerView.removeAllViewsInLayout();
+                bidsRecyclerView.removeAllViewsInLayout();
+                asksRecyclerView.removeAllViewsInLayout();
                 createView();
             }
         });
@@ -93,6 +89,9 @@ public class OrderBookActivity extends AppCompatActivity {
                         bidList.add(bids.get(0));
                         bidList.add(bids.get(1));
                     }
+
+                    Log.d(TAG, "bidList size: " + bidList.size());
+
                     for(List<String> asks : result.getAsks()){
                         float price = Float.parseFloat(asks.get(0));
                         float amount = Float.parseFloat(asks.get(1));
@@ -100,7 +99,8 @@ public class OrderBookActivity extends AppCompatActivity {
                         askList.add(asks.get(0));
                         askList.add(asks.get(1));
                     }
-                    adapter.notifyDataSetChanged();
+                    bidsAdapter.notifyDataSetChanged();
+                    asksAdapter.notifyDataSetChanged();
                 }
                 else{
                     Log.d(TAG, "onResponse: " + response.code());
@@ -116,14 +116,25 @@ public class OrderBookActivity extends AppCompatActivity {
     }
 
     private void createView(){
-        retrofitRequest();;
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(
-                this, 4);
-        recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemViewCacheSize(8);
-        adapter = new OrderBookAdapter(bidList);
-        recyclerView.setAdapter(adapter);
+        retrofitRequest();
+        GridLayoutManager bidsGridLayoutManager = new GridLayoutManager(
+                this, 3);
+        // bids recycler view
+        bidsRecyclerView.setLayoutManager(bidsGridLayoutManager);
+        bidsRecyclerView.setHasFixedSize(true);
+        bidsRecyclerView.setItemViewCacheSize(8);
+        bidsAdapter = new OrderBookAdapter(bidList);
+        bidsRecyclerView.setAdapter(bidsAdapter);
+
+        // asks recycler view
+        GridLayoutManager asksGridLayoutManager = new GridLayoutManager(
+                this, 3);
+        asksRecyclerView.setLayoutManager(asksGridLayoutManager);
+        asksRecyclerView.setHasFixedSize(true);
+        asksRecyclerView.setItemViewCacheSize(8);
+        asksAdapter = new OrderBookAdapter(askList);
+        asksRecyclerView.setAdapter(asksAdapter);
+
         if(swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(false);
         }
