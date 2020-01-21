@@ -1,5 +1,6 @@
 package raymond.liang.ilovezappos;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import java.util.List;
 public class OrderBookAdapter extends RecyclerView.Adapter<OrderBookAdapter.MyViewHolder> {
 
     private List<String> orderBookList;
+    private String type;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -23,8 +25,9 @@ public class OrderBookAdapter extends RecyclerView.Adapter<OrderBookAdapter.MyVi
         }
     }
 
-    public OrderBookAdapter(List<String> orderBookList) {
+    public OrderBookAdapter(List<String> orderBookList, String type) {
         this.orderBookList = orderBookList;
+        this.type = type;
     }
 
     @NonNull
@@ -36,12 +39,35 @@ public class OrderBookAdapter extends RecyclerView.Adapter<OrderBookAdapter.MyVi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
-        myViewHolder.orderBookInfo.setText(orderBookList.get(i));
+        if(type.equals("bids")) {
+            if (getItemViewType(i + 1) % 3 == 0) {
+                myViewHolder.orderBookInfo.setTextColor(Color.GREEN);
+                myViewHolder.orderBookInfo.setText(orderBookList.get(i));
+            } else {
+                myViewHolder.orderBookInfo.setText(orderBookList.get(i));
+            }
+        }
+        else{
+            if (getItemViewType(i) % 3 == 0) {
+                myViewHolder.orderBookInfo.setTextColor(Color.RED);
+                myViewHolder.orderBookInfo.setText(orderBookList.get(i));
+            } else {
+                myViewHolder.orderBookInfo.setText(orderBookList.get(i));
+            }
+        }
+
     }
 
     @Override
     public int getItemCount() {
         return orderBookList.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        // Just as an example, return 0 or 2 depending on position
+        // Note that unlike in ListView adapters, types don't have to be contiguous
+        return position;
     }
 
 }
