@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">ILoveZappos</string>
+
+    <string-array name="currency_pair">
+        <item>btcusd</item>
+        <item>btceur</item>
+        <item>eurusd</item>
+        <item>xrpusd</item>
+        <item>xrpeur</item>
+        <item>xrpbtc</item>
+        <item>ltcusd</item>
+        <item>ltceur</item>
+        <item>ltcbtc</item>
+        <item>ethusd</item>
+        <item>etheur</item>
+        <item>ethbtc</item>
+        <item>bchusd</item>
+        <item>bcheur</item>
+        <item>bchbtc</item>
+    </string-array>
 </resources>

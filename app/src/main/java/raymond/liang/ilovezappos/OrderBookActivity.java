@@ -2,6 +2,7 @@ package raymond.liang.ilovezappos;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelStoreOwner;
+import android.content.Intent;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -29,6 +30,7 @@ import retrofit2.Response;
 public class OrderBookActivity extends AppCompatActivity {
 
     private static final String TAG = "OrderBookActivity";
+    private String currency_pair;
     private TextView dateTextView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<String> bidList;
@@ -43,7 +45,10 @@ public class OrderBookActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_book);
-        setTitle("Order Book");
+
+        Intent intent = getIntent();
+        currency_pair = intent.getExtras().getString("currency_pair");
+        setTitle("Order Book - " + currency_pair);
         //orderBookViewModel = new ViewModelProvider(this.getViewModelStore(), ViewModelProvider.AndroidViewModelFactory).get(OrderBookViewModel.class);
         dateTextView = findViewById(R.id.dateTextView);
         swipeRefreshLayout = findViewById(R.id.swipe_container);
@@ -70,7 +75,7 @@ public class OrderBookActivity extends AppCompatActivity {
     private void retrofitRequest(){
         swipeRefreshLayout.setRefreshing(true);
         OrderBookApi orderBookApi = ServiceGenerator.getOrderBookApi();
-        Call<OrderBook> call = orderBookApi.getOrderBook("btcusd");
+        Call<OrderBook> call = orderBookApi.getOrderBook(currency_pair);
 
         call.enqueue(new Callback<OrderBook>() {
             @Override
@@ -104,8 +109,6 @@ public class OrderBookActivity extends AppCompatActivity {
                         float price = Float.parseFloat(asks.get(0));
                         float amount = Float.parseFloat(asks.get(1));
                         askList.add(Float.toString(price*amount));
-
-
                     }
 
                     //Log.d(TAG, "bidList size: " + askList);
@@ -129,6 +132,7 @@ public class OrderBookActivity extends AppCompatActivity {
         retrofitRequest();
         GridLayoutManager bidsGridLayoutManager = new GridLayoutManager(
                 this, 3);
+
         // bids recycler view
         bidsRecyclerView.setLayoutManager(bidsGridLayoutManager);
         bidsRecyclerView.setHasFixedSize(true);

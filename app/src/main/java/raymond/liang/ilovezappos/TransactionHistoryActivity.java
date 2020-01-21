@@ -1,6 +1,7 @@
 package raymond.liang.ilovezappos;
 
 import android.app.Service;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +37,7 @@ import retrofit2.Response;
 public class TransactionHistoryActivity extends AppCompatActivity {
 
     private static final String TAG = "TransactionHistoryActiv";
+    private String currency_pair;
     private LineChart chart;
 
     List<Entry> entries = new ArrayList<Entry>();
@@ -45,7 +47,9 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transaction_history);
 
-        setTitle("Transaction History");
+        Intent intent = getIntent();
+        currency_pair = intent.getExtras().getString("currency_pair");
+        setTitle("Transaction History - " + currency_pair);
 
         retrofitRequest();
 
@@ -55,7 +59,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
     private void retrofitRequest() {
 
         TransactionHistoryApi transactionHistoryApi = ServiceGenerator.getTransactionHistoryApi();
-        Call<List<Transaction>> call = transactionHistoryApi.getTransactionHistory("btcusd");
+        Call<List<Transaction>> call = transactionHistoryApi.getTransactionHistory(currency_pair);
 
         call.enqueue(new Callback<List<Transaction>>() {
             @Override
