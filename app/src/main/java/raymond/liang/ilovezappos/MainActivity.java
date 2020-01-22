@@ -1,8 +1,13 @@
 package raymond.liang.ilovezappos;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -10,8 +15,11 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import raymond.liang.ilovezappos.jobmanager.PriceAlertJobService;
+
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
+    private static final String TAG = "MainActivity";
     private String spinnerSelection;
 
     @Override
@@ -44,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), PriceAlertActivity.class);
+                i.putExtra("currency_pair", spinnerSelection);
                 startActivity(i);
             }
         });
@@ -56,16 +65,36 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
+
+        setJobScheduler();
+    }
+
+    private void setJobScheduler() {
+        ComponentName serviceName = new ComponentName(this, PriceAlertJobService.class);
+        JobInfo jobInfo = new JobInfo.Builder(120, serviceName)
+                .setPeriodic(1000)
+                .build();
+
+        JobScheduler scheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        int result = scheduler.schedule(jobInfo);
+        if (result == JobScheduler.RESULT_SUCCESS) {
+            Log.d(TAG, "Job scheduled successfully!");
+        } else {
+            Log.d(TAG, "Job not scheduled!");
+        }
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         spinnerSelection = parent.getItemAtPosition(position).toString();
+        if (spinnerSelection.equals("Select Currency")){
+            spinnerSelection = "btcusd";
+        }
         Toast.makeText(parent.getContext(), spinnerSelection, Toast.LENGTH_LONG);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        spinnerSelection = parent.getItemAtPosition(0).toString();
+        spinnerSelection = parent.getItemAtPosition(1).toString();
     }
 }

@@ -7,12 +7,12 @@
         android:id="@+id/orderBookInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="right"
         android:textAlignment="center"
-        android:paddingStart="2dp"
-        android:textSize="10sp"
-        android:textColor="@android:color/white"
+        android:paddingLeft="2dp"
+        android:textSize="9sp"
+        android:textColor="@android:color/darker_gray"
         android:text="placeholder" />
-
 
 </LinearLayout>
 

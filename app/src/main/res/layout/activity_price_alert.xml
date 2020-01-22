@@ -6,9 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".PriceAlertActivity">
 
-    <TextView
-        android:text="Price ALert"
+    <EditText
+        android:hint="Enter desired BTC price"
+        android:id="@+id/priceAlertET"
+        android:inputType="numberDecimal"
+        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/priceAlertButton"
+        android:text="Check Price"
+        android:layout_below="@+id/priceAlertET"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

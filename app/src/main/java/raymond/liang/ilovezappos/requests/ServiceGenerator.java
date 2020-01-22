@@ -14,6 +14,8 @@ public class ServiceGenerator {
 
     private static TransactionHistoryApi transactionHistoryApi = retrofit.create(TransactionHistoryApi.class);
 
+    private static PriceAlertApi priceAlertApi = retrofit.create(PriceAlertApi.class);
+
     private static OrderBookApi orderBookApi = retrofit.create(OrderBookApi.class);
 
     public static TransactionHistoryApi getTransactionHistoryApi(){
@@ -21,4 +23,6 @@ public class ServiceGenerator {
     }
 
     public static OrderBookApi getOrderBookApi() { return orderBookApi; }
+
+    public static PriceAlertApi getPriceAlertApi() { return priceAlertApi; }
 }

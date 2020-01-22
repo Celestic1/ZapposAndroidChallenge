@@ -2,6 +2,7 @@
     <string name="app_name">ILoveZappos</string>
 
     <string-array name="currency_pair">
+        <item>Select Currency</item>
         <item>btcusd</item>
         <item>btceur</item>
         <item>eurusd</item>
@@ -18,4 +19,6 @@
         <item>bcheur</item>
         <item>bchbtc</item>
     </string-array>
+
+    <string name="default_notification_channel_id" translatable="false">zappos_default_channel</string>
 </resources>

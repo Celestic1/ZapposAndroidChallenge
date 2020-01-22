@@ -1,17 +1,21 @@
 package raymond.liang.ilovezappos;
 
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelStoreOwner;
+import androidx.appcompat.app.ActionBar;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 import android.content.Intent;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,11 +53,16 @@ public class OrderBookActivity extends AppCompatActivity {
         Intent intent = getIntent();
         currency_pair = intent.getExtras().getString("currency_pair");
         setTitle("Order Book - " + currency_pair);
-        //orderBookViewModel = new ViewModelProvider(this.getViewModelStore(), ViewModelProvider.AndroidViewModelFactory).get(OrderBookViewModel.class);
+        orderBookViewModel = new ViewModelProvider(this.getViewModelStore(),
+                ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                .get(OrderBookViewModel.class);
+
         dateTextView = findViewById(R.id.dateTextView);
         swipeRefreshLayout = findViewById(R.id.swipe_container);
         bidsRecyclerView = findViewById(R.id.bidsRecyclerView);
         asksRecyclerView = findViewById(R.id.asksRecyclerView);
+
+
         bidList = new ArrayList<>();
         askList = new ArrayList<>();
 
@@ -65,15 +74,17 @@ public class OrderBookActivity extends AppCompatActivity {
                 asksRecyclerView.removeAllViewsInLayout();
                 bidList.clear();
                 askList.clear();
-                createView();
+                retrofitRequest();
             }
         });
+
+        swipeRefreshLayout.setRefreshing(true);
         createView();
 
     }
 
     private void retrofitRequest(){
-        swipeRefreshLayout.setRefreshing(true);
+
         OrderBookApi orderBookApi = ServiceGenerator.getOrderBookApi();
         Call<OrderBook> call = orderBookApi.getOrderBook(currency_pair);
 
@@ -81,39 +92,8 @@ public class OrderBookActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<OrderBook> call, Response<OrderBook> response) {
                 if(response.code() == 200){
-
-                    OrderBook result = response.body();
-                    int timeStamp = Integer.parseInt(result.getTimestamp());
-                    String date = epochToDate(timeStamp);
-                    dateTextView.setText(date);
-
-                    //Log.d(TAG, "bids list size: " + result.getBidsListSize());
-                    //Log.d(TAG, "asks list size: " + result.getAsksListSize());
-
-                    for(List<String> bids : result.getBids()){
-                        float price = Float.parseFloat(bids.get(0));
-                        float amount = Float.parseFloat(bids.get(1));
-                        bidList.add(Float.toString(price*amount));
-                        bidList.add(bids.get(1));
-                        bidList.add(bids.get(0));
-                    }
-
-                    //Log.d(TAG, "bidList size: " + bidList.size());
-                    //Log.d(TAG, "bidList size: " + askList.size());
-
-                    //Log.d(TAG, "bidList size: " + bidList);
-
-                    for(List<String> asks : result.getAsks()){
-                        askList.add(asks.get(0));
-                        askList.add(asks.get(1));
-                        float price = Float.parseFloat(asks.get(0));
-                        float amount = Float.parseFloat(asks.get(1));
-                        askList.add(Float.toString(price*amount));
-                    }
-
-                    //Log.d(TAG, "bidList size: " + askList);
-                    bidsAdapter.notifyDataSetChanged();
-                    asksAdapter.notifyDataSetChanged();
+                    orderBookViewModel.setOrderBook(response.body());
+                    setBidsAndAsksFromOrderBook();
                 }
                 else{
                     Log.d(TAG, "onResponse: " + response.code());
@@ -128,8 +108,35 @@ public class OrderBookActivity extends AppCompatActivity {
         });
     }
 
+    private void setBidsAndAsksFromOrderBook() {
+        if(swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+
+        int timeStamp = Integer.parseInt(orderBookViewModel.getOrderBook().getTimestamp());
+        String date = epochToDate(timeStamp);
+        dateTextView.setText(date);
+
+        for(List<String> bids : orderBookViewModel.getOrderBook().getBids()){
+            float price = Float.parseFloat(bids.get(0));
+            float amount = Float.parseFloat(bids.get(1));
+            bidList.add(Float.toString(price*amount));
+            bidList.add(bids.get(1));
+            bidList.add(bids.get(0));
+        }
+
+        for(List<String> asks : orderBookViewModel.getOrderBook().getAsks()){
+            askList.add(asks.get(0));
+            askList.add(asks.get(1));
+            float price = Float.parseFloat(asks.get(0));
+            float amount = Float.parseFloat(asks.get(1));
+            askList.add(Float.toString(price*amount));
+        }
+        bidsAdapter.notifyDataSetChanged();
+        asksAdapter.notifyDataSetChanged();
+    }
+
     private void createView(){
-        retrofitRequest();
         GridLayoutManager bidsGridLayoutManager = new GridLayoutManager(
                 this, 3);
 
@@ -152,11 +159,51 @@ public class OrderBookActivity extends AppCompatActivity {
         if(swipeRefreshLayout.isRefreshing()) {
             swipeRefreshLayout.setRefreshing(false);
         }
+
+        if (orderBookViewModel.getOrderBook() == null) {
+            retrofitRequest();
+        } else {
+            setBidsAndAsksFromOrderBook();
+        }
     }
 
     private String epochToDate(int epoch){
         String date = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss", Locale.UK).format(new java.util.Date (epoch*1000L));
         return date + " (UTC-8)";
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            // Check if user triggered a refresh:
+            case R.id.menu_refresh:
+                Log.i(TAG, "Refresh menu item selected");
+                swipeRefreshLayout.setRefreshing(true);
+
+                // Signal SwipeRefreshLayout to start the progress indicator
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        retrofitRequest();
+                    }
+                }, 1000);
+
+                // Start the refresh background task.
+                // This method calls setRefreshing(false) when it's finished.
+
+                return true;
+        }
+
+        // User didn't trigger a refresh, let the superclass handle this action
+        return super.onOptionsItemSelected(item);
     }
 
 }
