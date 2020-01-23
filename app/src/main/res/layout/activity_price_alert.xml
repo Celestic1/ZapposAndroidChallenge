@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="24dp"
     tools:context=".PriceAlertActivity">
 
     <EditText
@@ -12,14 +13,17 @@
         android:inputType="numberDecimal"
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
+        android:textAlignment="center"
         android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/priceAlertButton"
-        android:text="Check Price"
+        android:text="Schedule Price Alert"
         android:layout_below="@+id/priceAlertET"
         android:layout_centerInParent="true"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/rounded_corners"
         android:layout_height="wrap_content" />
 
 </RelativeLayout>

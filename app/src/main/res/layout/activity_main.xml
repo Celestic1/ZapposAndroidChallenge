@@ -5,19 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"
-    android:background="@android:color/white"
+    android:background="@color/colorWhite"
     tools:context=".MainActivity">
-
-    <Spinner
-        android:id="@+id/currency_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"/>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/bitstamp_logo"
+        android:src="@drawable/bitstamp"
         android:layout_centerHorizontal="true"
         android:layout_above="@id/transactionHistory"/>
 
@@ -26,19 +20,30 @@
         android:layout_above="@id/orderBook"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorWhite"
+        android:fontFamily="sans-serif"
+        android:background="@drawable/rounded_corners"
+        android:layout_marginBottom="20dp"
         android:text="Transaction History" />
 
     <Button
         android:id="@+id/orderBook"
         android:text="Order Book"
+        android:background="@drawable/rounded_corners"
+        android:textColor="@color/colorWhite"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:layout_marginBottom="20dp"
         android:layout_centerInParent="true" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/orderBook"
+        android:fontFamily="sans-serif"
+        android:background="@drawable/rounded_corners"
+        android:textColor="@color/colorWhite"
         android:id="@+id/priceAlert"
         android:text="Price Alert" />
 

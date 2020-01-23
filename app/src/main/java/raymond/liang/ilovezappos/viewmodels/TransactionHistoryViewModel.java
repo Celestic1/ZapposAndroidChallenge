@@ -1,20 +1,22 @@
 package raymond.liang.ilovezappos.viewmodels;
 
+import java.util.List;
+
 import androidx.lifecycle.ViewModel;
 import raymond.liang.ilovezappos.models.Transaction;
 
 public class TransactionHistoryViewModel extends ViewModel {
 
-    private Transaction transaction;
+    private List<Transaction> transaction;
 
     public TransactionHistoryViewModel(){
     }
 
-    public Transaction getTransaction(){
+    public List<Transaction> getTransaction(){
         return transaction;
     }
 
-    public void setTransaction(Transaction transaction){
+    public void setTransaction(List<Transaction> transaction){
         this.transaction = transaction;
     }
 

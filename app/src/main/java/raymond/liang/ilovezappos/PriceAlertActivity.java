@@ -7,13 +7,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import raymond.liang.ilovezappos.jobmanager.PriceAlertJobService;
+import raymond.liang.ilovezappos.models.PriceAlert;
 
 public class PriceAlertActivity extends AppCompatActivity {
 
     private EditText priceAlertEditText;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,7 @@ public class PriceAlertActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences =
                         PreferenceManager.getDefaultSharedPreferences(PriceAlertActivity.this);
                 sharedPreferences.edit().putFloat(PriceAlertJobService.ALERT_KEY, Float.valueOf(priceAlertEditText.getText().toString())).apply();
+                Toast.makeText(PriceAlertActivity.this, "Price Alert job scheduled.", Toast.LENGTH_LONG).show();
             }
         });
     }

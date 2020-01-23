@@ -17,10 +17,9 @@ import android.widget.Toast;
 
 import raymond.liang.ilovezappos.jobmanager.PriceAlertJobService;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private String spinnerSelection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), TransactionHistoryActivity.class);
-                i.putExtra("currency_pair", spinnerSelection);
                 startActivity(i);
             }
         });
@@ -42,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), OrderBookActivity.class);
-                i.putExtra("currency_pair", spinnerSelection);
                 startActivity(i);
             }
         });
@@ -52,19 +49,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), PriceAlertActivity.class);
-                i.putExtra("currency_pair", spinnerSelection);
                 startActivity(i);
             }
         });
-
-        Spinner spinner = findViewById(R.id.currency_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.currency_pair,
-                android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
 
         setJobScheduler();
     }
@@ -72,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private void setJobScheduler() {
         ComponentName serviceName = new ComponentName(this, PriceAlertJobService.class);
         JobInfo jobInfo = new JobInfo.Builder(120, serviceName)
-                .setPeriodic(1000)
+                .setPeriodic(3600000)
                 .build();
 
         JobScheduler scheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
@@ -82,19 +69,5 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         } else {
             Log.d(TAG, "Job not scheduled!");
         }
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        spinnerSelection = parent.getItemAtPosition(position).toString();
-        if (spinnerSelection.equals("Select Currency")){
-            spinnerSelection = "btcusd";
-        }
-        Toast.makeText(parent.getContext(), spinnerSelection, Toast.LENGTH_LONG);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        spinnerSelection = parent.getItemAtPosition(1).toString();
     }
 }

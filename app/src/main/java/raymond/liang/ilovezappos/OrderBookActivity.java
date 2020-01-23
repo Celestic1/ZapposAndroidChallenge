@@ -34,7 +34,7 @@ import retrofit2.Response;
 public class OrderBookActivity extends AppCompatActivity {
 
     private static final String TAG = "OrderBookActivity";
-    private String currency_pair;
+    private String currency_pair = "btcusd";
     private TextView dateTextView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private List<String> bidList;
@@ -50,9 +50,10 @@ public class OrderBookActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_book);
 
-        Intent intent = getIntent();
-        currency_pair = intent.getExtras().getString("currency_pair");
+        getSupportActionBar().setElevation(0);
+
         setTitle("Order Book - " + currency_pair);
+
         orderBookViewModel = new ViewModelProvider(this.getViewModelStore(),
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
                 .get(OrderBookViewModel.class);
@@ -66,7 +67,7 @@ public class OrderBookActivity extends AppCompatActivity {
         bidList = new ArrayList<>();
         askList = new ArrayList<>();
 
-        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_orange_dark);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

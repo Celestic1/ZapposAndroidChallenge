@@ -11,6 +11,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.Log;
+
 import androidx.core.app.NotificationCompat;
 
 import raymond.liang.ilovezappos.MainActivity;
@@ -24,6 +26,7 @@ import retrofit2.Response;
 
 public class PriceAlertJobService extends JobService {
 
+    private final static String TAG = "PriceAlertJobService";
     public static final String ALERT_KEY = "price_alert_float";
     @Override
     public boolean onStartJob(JobParameters params) {
@@ -36,12 +39,14 @@ public class PriceAlertJobService extends JobService {
             call.enqueue(new Callback<PriceAlert>() {
                 @Override
                 public void onResponse(Call<PriceAlert> call, Response<PriceAlert> response) {
-                    showNotification();
+                    if(response.code() == 200) {
+                        showNotification();
+                    }
                 }
 
                 @Override
                 public void onFailure(Call<PriceAlert> call, Throwable t) {
-
+                    Log.d(TAG, "onFailure: " + t.getMessage());
                 }
             });
 
@@ -66,8 +71,8 @@ public class PriceAlertJobService extends JobService {
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.mipmap.download)
-                .setContentTitle("Price has dropped your desired price range")
-                .setContentText("")
+                .setContentTitle("Price has dropped your desired price range.")
+                .setContentText("Click to go into app and set a new price.")
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
@@ -79,7 +84,7 @@ public class PriceAlertJobService extends JobService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId,
                     "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
+                    NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
         }
 
